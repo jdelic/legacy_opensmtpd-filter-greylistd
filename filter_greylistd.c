@@ -49,7 +49,7 @@ static int check_greylist(const char *ip_addr) {
 
     if (connect(sock, (const struct sockaddr *)&addr,
                 sizeof(struct sockaddr_un)) == -1) {
-        fatal("filter_greylistd: can't connect to server");
+        fatal("filter_greylistd: can't connect to server %s", addr.sun_path);
         return GREY_ERROR;
     }
 
@@ -96,7 +96,7 @@ static int on_connect(uint64_t id, struct filter_connect *conn) {
                       (char *)&ip_str,
                       INET6_ADDRSTRLEN) == NULL) {
             fatal("can't convert assumed ipv6 address to string %i", errno);
-            return filter_api_reject_code(id, FILTER_FAIL, 521,
+            return filter_api_reject_code(id, FILTER_CLOSE, 521,
                                           "unparsable ipv6 address");
         }
     }
@@ -106,14 +106,14 @@ static int on_connect(uint64_t id, struct filter_connect *conn) {
                       (char *)&ip_str,
                       INET_ADDRSTRLEN) == NULL) {
             fatal("can't convert assumed ipv4 address to string %i", errno);
-            return filter_api_reject_code(id, FILTER_FAIL, 521,
+            return filter_api_reject_code(id, FILTER_CLOSE, 521,
                                           "unparsable ipv4 address");
         }
     }
     else {
         fatal("filter called with unknown protocol family %i",
               conn->remote.ss_family);
-        return filter_api_reject_code(id, FILTER_FAIL, 521,
+        return filter_api_reject_code(id, FILTER_CLOSE, 521,
                                       "unknown address family");
     }
 
@@ -127,11 +127,11 @@ static int on_connect(uint64_t id, struct filter_connect *conn) {
             return filter_api_accept(id);
         break;
         case GREY_HOLD:
-            return filter_api_reject_code(id, FILTER_FAIL, 450,
+            return filter_api_reject_code(id, FILTER_CLOSE, 450,
                                           "greylisted. Try again later.");
         break;
         case GREY_DENY:
-            return filter_api_reject_code(id, FILTER_FAIL, 550,
+            return filter_api_reject_code(id, FILTER_CLOSE, 550,
                                           "blacklisted. Transmission denied.");
         break;
     }
