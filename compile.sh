@@ -1,9 +1,9 @@
 #!/bin/bash
 gcc \
-    -I../opensmtpd-extras-5.7.1/api \
-    -I../opensmtpd-extras-5.7.1/openbsd-compat/ \
-    -I../opensmtpd-extras-5.7.1/ \
-    -L../opensmtpd-extras-5.7.1/openbsd-compat/ \
+    -I../s/opensmtpd-extras/api \
+    -I../s/opensmtpd-extras/openbsd-compat/ \
+    -I../s/opensmtpd-extras/ \
+    -L../s/opensmtpd-extras/openbsd-compat/ \
     -o filter-greylistd \
     -DHAVE_CONFIG_H \
     -D_FORTIFY_SOURCE=2 \
@@ -25,14 +25,15 @@ gcc \
     -fno-strict-aliasing \
     -fno-builtin-memset \
     -DBUILD_FILTER \
-    ../opensmtpd-extras-5.7.1/api/util.o \
-    ../opensmtpd-extras-5.7.1/api/tree.o \
-    ../opensmtpd-extras-5.7.1/api/iobuf.o \
-    ../opensmtpd-extras-5.7.1/api/ioev.o \
-    ../opensmtpd-extras-5.7.1/api/mproc.o \
-    ../opensmtpd-extras-5.7.1/api/filter_api.o \
-    ../opensmtpd-extras-5.7.1/api/log.o \
-    ../opensmtpd-extras-5.7.1/api/dict.o \
+    ../s/opensmtpd-extras/api/util.o \
+    ../s/opensmtpd-extras/api/tree.o \
+    ../s/opensmtpd-extras/api/iobuf.o \
+    ../s/opensmtpd-extras/api/ioev.o \
+    ../s/opensmtpd-extras/api/mproc.o \
+    ../s/opensmtpd-extras/api/filter_api.o \
+    ../s/opensmtpd-extras/api/log.o \
+    ../s/opensmtpd-extras/api/dict.o \
+    ../s/opensmtpd-extras/api/rfc2822.o \
     -lopenbsd-compat \
     -levent \
     -lssl \
