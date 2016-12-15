@@ -48,8 +48,8 @@ static int check_greylist(const char *ip_addr) {
 
     if (connect(sock, (const struct sockaddr *)&addr,
                 sizeof(struct sockaddr_un)) == -1) {
-        fatal("filter_greylistd: can't connect to server %s uid:%i gid:%i errno:%i", addr.sun_path, geteuid(), getegid(), errno);
-        return GREY_ERROR;
+        log_warn("filter_greylistd: can't connect to server %s uid:%i gid:%i errno:%i", addr.sun_path, geteuid(), getegid(), errno);
+        return -1;
     }
 
 
@@ -58,7 +58,7 @@ static int check_greylist(const char *ip_addr) {
     snprintf((char *)&buf, 7 + INET6_ADDRSTRLEN, "update %s", ip_addr);
 
     if (write(sock, &buf, strlen((const char *)&buf)) == -1) {
-        fatal("filter_greylistd: write error");
+        log_warn("filter_greylistd: write error");
         close(sock);
         return GREY_ERROR;
     }
@@ -66,7 +66,7 @@ static int check_greylist(const char *ip_addr) {
     char reply[32];
     memset(&reply, 0, 32);
     if (read(sock, &reply, 31) == -1) {
-        fatal("filter_greylistd: read error");
+        log_warn("filter_greylistd: read error");
         close(sock);
         return GREY_ERROR;
     }
@@ -77,7 +77,7 @@ static int check_greylist(const char *ip_addr) {
     if (strncmp((const char *)&reply, "black", 5) == 0) return GREY_DENY;
     if (strncmp((const char *)&reply, "white", 5) == 0) return GREY_OK;
 
-    fatal("unknown greylisting status: %s", (char *)&reply);
+    log_warn("unknown greylisting status: %s", (char *)&reply);
     return GREY_ERROR;
 }
 
@@ -94,7 +94,7 @@ static int on_connect(uint64_t id, struct filter_connect *conn) {
         if (inet_ntop(AF_INET6, (const void *)&ip6->sin6_addr.s6_addr,
                       (char *)&ip_str,
                       INET6_ADDRSTRLEN) == NULL) {
-            fatal("can't convert assumed ipv6 address to string %i", errno);
+            log_warn("can't convert assumed ipv6 address to string %i", errno);
             return filter_api_reject_code(id, FILTER_CLOSE, 521,
                                           "unparsable ipv6 address");
         }
@@ -104,14 +104,14 @@ static int on_connect(uint64_t id, struct filter_connect *conn) {
         if (inet_ntop(AF_INET, (const void *)&ip4->sin_addr.s_addr,
                       (char *)&ip_str,
                       INET_ADDRSTRLEN) == NULL) {
-            fatal("can't convert assumed ipv4 address to string %i", errno);
+            log_warn("can't convert assumed ipv4 address to string %i", errno);
             return filter_api_reject_code(id, FILTER_CLOSE, 521,
                                           "unparsable ipv4 address");
         }
     }
     else {
-        fatal("filter called with unknown protocol family %i",
-              conn->remote.ss_family);
+        log_warn("filter called with unknown protocol family %i",
+                 conn->remote.ss_family);
         return filter_api_reject_code(id, FILTER_CLOSE, 521,
                                       "unknown address family");
     }
@@ -142,7 +142,7 @@ static int on_connect(uint64_t id, struct filter_connect *conn) {
              "unavailable. We temporarily reject email and hope for better "
              "times.");
     return filter_api_reject_code(
-                id, FILTER_FAIL, 451,
+                id, FILTER_CLOSE, 451,
                 "there seems to be a technical problem on our end. "
                 "Please try again."
            );
