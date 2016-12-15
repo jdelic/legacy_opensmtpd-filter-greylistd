@@ -10,14 +10,14 @@ if [ ! -x opensmtpd-extras/configure ]; then
     cd ..
 fi
 
-if [ ! -f opensmtpd-extras/config.h ]; then
+if [ ! -f opensmtpd-extras/config.h ] || [ "x$1" = "xrebuild" ]; then
     cd opensmtpd-extras
     ./configure --with-filter-stub --with-table-stub --with-scheduler-stub \
         --with-queue-stub
     cd ..
 fi
 
-if [ ! -f opensmtpd-extras/api/filter_api.o ]; then
+if [ ! -f opensmtpd-extras/api/filter_api.o ] || [ "x$1" = "xrebuild" ]; then
     cd opensmtpd-extras
     make
     cd ..
