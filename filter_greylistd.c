@@ -49,7 +49,7 @@ static int check_greylist(const char *ip_addr) {
 
     if (connect(sock, (const struct sockaddr *)&addr,
                 sizeof(struct sockaddr_un)) == -1) {
-        fatal("filter_greylistd: can't connect to server %s", addr.sun_path);
+        fatal("filter_greylistd: can't connect to server %s uid:%i gid:%i errno:%i", addr.sun_path, geteuid(), getegid(), errno);
         return GREY_ERROR;
     }
 
@@ -74,9 +74,9 @@ static int check_greylist(const char *ip_addr) {
 
     close(sock);
 
-    if (strncmp((const char *)&reply, "grey", 4)) return GREY_HOLD;
-    if (strncmp((const char *)&reply, "black", 5)) return GREY_DENY;
-    if (strncmp((const char *)&reply, "white", 5)) return GREY_OK;
+    if (strncmp((const char *)&reply, "grey", 4) == 0) return GREY_HOLD;
+    if (strncmp((const char *)&reply, "black", 5) == 0) return GREY_DENY;
+    if (strncmp((const char *)&reply, "white", 5) == 0) return GREY_OK;
 
     fatal("unknown greylisting status: %s", (char *)&reply);
     return GREY_ERROR;
@@ -181,7 +181,7 @@ int main(int argc, char **argv) {
     log_debug("debug: starting...");
 
     filter_api_on_connect(on_connect);
-
+    filter_api_no_chroot();
     filter_api_loop();
     log_debug("debug: exiting");
 
