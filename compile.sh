@@ -13,7 +13,8 @@ fi
 if [ ! -f opensmtpd-extras/config.h ] || [ "x$1" = "xrebuild" ]; then
     cd opensmtpd-extras
     ./configure --with-filter-stub --with-table-stub --with-scheduler-stub \
-        --with-queue-stub --with-privsep-user=opensmtpd
+        --with-queue-stub --with-user-smtpd=opensmtpd \
+        --with-user-queue=opensmtpq
     cd ..
 fi
 
