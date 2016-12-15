@@ -1,7 +1,7 @@
 #!/bin/bash
 
 if [ ! -d opensmtpd-extras ] || [ ! -x opensmtpd-extras/bootstrap ]; then
-    git submodule init
+    git submodule update --init
 fi
 
 if [ ! -x opensmtpd-extras/configure ]; then
