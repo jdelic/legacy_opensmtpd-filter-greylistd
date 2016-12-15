@@ -25,8 +25,6 @@
 #include <errno.h>
 #include <grp.h>
 
-#include "includes.h"
-#include "config.h"
 #include "smtpd-defines.h"
 #include "smtpd-api.h"
 #include "log.h"
