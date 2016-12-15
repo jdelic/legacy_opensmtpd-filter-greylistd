@@ -170,13 +170,13 @@ int main(int argc, char **argv) {
         switch (ch) {
             case 'd':
                 d = 1;
-                break;
+            break;
             case 'v':
                 v |= TRACE_DEBUG;
-                break;
+            break;
             case 's':
                 greylistd_socket_path = optarg;
-                break;
+            break;
             default:
                 log_warnx("warn: bad option");
                 return 1;
