@@ -1,9 +1,33 @@
 #!/bin/bash
+
+if [ ! -d opensmtpd-extras ] || [ ! -x opensmtpd-extras/bootstrap ]; then
+    git submodule init
+fi
+
+if [ ! -x opensmtpd-extras/configure ]; then
+    cd opensmtpd-extras
+    ./bootstrap
+    cd ..
+fi
+
+if [ ! -x opensmtpd-extras/config.h ]; then
+    cd opensmtpd-extras
+    ./configure --with-filter-stub --with-table-stub --with-scheduler-stub \
+        --with-queue-stub
+    cd ..
+fi
+
+if [ ! -x opensmtpd-extras/api/filter_api.o ]; then
+    cd opensmtpd-extras
+    make
+    cd ..
+fi
+
 gcc \
-    -I../s/opensmtpd-extras/api \
-    -I../s/opensmtpd-extras/openbsd-compat/ \
-    -I../s/opensmtpd-extras/ \
-    -L../s/opensmtpd-extras/openbsd-compat/ \
+    -Iopensmtpd-extras/api \
+    -Iopensmtpd-extras/openbsd-compat/ \
+    -Iopensmtpd-extras/ \
+    -Lopensmtpd-extras/openbsd-compat/ \
     -o filter-greylistd \
     -DHAVE_CONFIG_H \
     -D_FORTIFY_SOURCE=2 \
@@ -25,15 +49,15 @@ gcc \
     -fno-strict-aliasing \
     -fno-builtin-memset \
     -DBUILD_FILTER \
-    ../s/opensmtpd-extras/api/util.o \
-    ../s/opensmtpd-extras/api/tree.o \
-    ../s/opensmtpd-extras/api/iobuf.o \
-    ../s/opensmtpd-extras/api/ioev.o \
-    ../s/opensmtpd-extras/api/mproc.o \
-    ../s/opensmtpd-extras/api/filter_api.o \
-    ../s/opensmtpd-extras/api/log.o \
-    ../s/opensmtpd-extras/api/dict.o \
-    ../s/opensmtpd-extras/api/rfc2822.o \
+    opensmtpd-extras/api/util.o \
+    opensmtpd-extras/api/tree.o \
+    opensmtpd-extras/api/iobuf.o \
+    opensmtpd-extras/api/ioev.o \
+    opensmtpd-extras/api/mproc.o \
+    opensmtpd-extras/api/filter_api.o \
+    opensmtpd-extras/api/log.o \
+    opensmtpd-extras/api/dict.o \
+    opensmtpd-extras/api/rfc2822.o \
     -lopenbsd-compat \
     -levent \
     -lssl \
