@@ -1,5 +1,5 @@
 test
-filter_greylistd
+filter-greylistd
 *.o
 build/
 *.deb
