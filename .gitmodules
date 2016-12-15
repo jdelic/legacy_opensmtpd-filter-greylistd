@@ -1,0 +1,3 @@
+[submodule "opensmtpd-extras"]
+	path = opensmtpd-extras
+	url = https://github.com/jdelic/opensmtpd-extras
