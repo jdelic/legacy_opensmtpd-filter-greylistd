@@ -40,6 +40,7 @@ typedef enum greystates {
 char *greylistd_socket_path = "/var/run/greylistd/socket";
 
 
+static int connect_greylistd() {
     struct sockaddr_un addr;
     memset(&addr, 0, sizeof(struct sockaddr_un));
 
@@ -53,7 +54,13 @@ char *greylistd_socket_path = "/var/run/greylistd/socket";
         return -1;
     }
 
+    return sock;
+}
+
+
 static greystate_t check_greylist(const char *ip_addr) {
+    int sock = connect_greylistd();
+    if (sock == -1) return GREY_ERROR;
 
     char buf[7 + INET6_ADDRSTRLEN]; /* max length of "update [ipv6 addr]" */
     memset(&buf, 0, 7 + INET6_ADDRSTRLEN);
@@ -183,6 +190,14 @@ int main(int argc, char **argv) {
     log_verbose(v);
 
     log_debug("debug: starting...");
+
+    /* check connection to greylistd */
+    int sock = connect_greylistd();
+    if (sock == -1) {
+        fatal("filter_greylistd: greylistd server not available, can't start");
+        return 0;
+    }
+    close(sock);
 
     filter_api_on_connect(on_connect);
     filter_api_no_chroot();
