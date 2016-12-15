@@ -64,3 +64,23 @@ gcc \
     -lcrypto \
     filter_greylistd.c
 
+
+if [ -f opensmtpd-filter-greylistd_0.1.0.deb ]; then
+    rm opensmtpd-filter-greylistd_0.1.0.deb
+fi
+
+
+fpm \
+    -s dir \
+    -t deb \
+    -p opensmtpd-filter-greylistd_0.1.0.deb \
+    -n opensmtpd-filter-greylistd \
+    -v "0.1.0" \
+    -m "Jonas Maurus" \
+    -d "opensmtpd (>=6.0.2p1)" \
+    -d "opensmtpd (<<6.0.3)" \
+    -d "greylistd" \
+    --description "Provides integration with greylistd for OpenSMTPD." \
+    --url "https://github.com/jdelic/opensmtpd-filter-greylistd" \
+    filter-greylistd=/usr/lib/x86_64-linux-gnu/opensmtpd/filter-greylistd
+
