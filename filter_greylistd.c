@@ -23,6 +23,7 @@
 #include <sys/un.h>
 #include <arpa/inet.h>
 #include <errno.h>
+#include <grp.h>
 
 #include "includes.h"
 #include "config.h"
@@ -128,11 +129,11 @@ static int on_connect(uint64_t id, struct filter_connect *conn) {
         break;
         case GREY_HOLD:
             return filter_api_reject_code(id, FILTER_CLOSE, 450,
-                                          "greylisted. Try again later.");
+                                          "%s greylisted. Try again later.");
         break;
         case GREY_DENY:
             return filter_api_reject_code(id, FILTER_CLOSE, 550,
-                                          "blacklisted. Transmission denied.");
+                                          "%s blacklisted. Transmission denied.");
         break;
     }
 
@@ -157,19 +158,19 @@ int main(int argc, char **argv) {
 
     while ((ch = getopt(argc, argv, "dvs:")) != -1) {
         switch (ch) {
-        case 'd':
-            d = 1;
-        break;
-        case 'v':
-            v |= TRACE_DEBUG;
-        break;
-        case 's':
-            greylistd_socket_path = optarg;
-        break;
-        default:
-            log_warnx("warn: bad option");
-            return 1;
-            /* NOTREACHED */
+            case 'd':
+                d = 1;
+                break;
+            case 'v':
+                v |= TRACE_DEBUG;
+                break;
+            case 's':
+                greylistd_socket_path = optarg;
+                break;
+            default:
+                log_warnx("warn: bad option");
+                return 1;
+                /* NOTREACHED */
         }
     }
     argc -= optind;
