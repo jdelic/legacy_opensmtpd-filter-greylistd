@@ -29,16 +29,17 @@
 #include "smtpd-api.h"
 #include "log.h"
 
-#define GREY_OK 0
-#define GREY_HOLD 1
-#define GREY_ERROR 2
-#define GREY_DENY 3
 
+typedef enum greystates {
+    GREY_OK,
+    GREY_HOLD,
+    GREY_DENY,
+    GREY_ERROR
+} greystate_t;
 
 char *greylistd_socket_path = "/var/run/greylistd/socket";
 
 
-static int check_greylist(const char *ip_addr) {
     struct sockaddr_un addr;
     memset(&addr, 0, sizeof(struct sockaddr_un));
 
@@ -52,6 +53,7 @@ static int check_greylist(const char *ip_addr) {
         return -1;
     }
 
+static greystate_t check_greylist(const char *ip_addr) {
 
     char buf[7 + INET6_ADDRSTRLEN]; /* max length of "update [ipv6 addr]" */
     memset(&buf, 0, 7 + INET6_ADDRSTRLEN);
@@ -119,7 +121,7 @@ static int on_connect(uint64_t id, struct filter_connect *conn) {
     /* now we should have a string representation of the remote IP in
      * ip_str
      */
-    int action = check_greylist((const char *)&ip_str);
+    greystate_t action = check_greylist((const char *)&ip_str);
 
     switch (action) {
         case GREY_OK:
@@ -132,6 +134,9 @@ static int on_connect(uint64_t id, struct filter_connect *conn) {
         case GREY_DENY:
             return filter_api_reject_code(id, FILTER_CLOSE, 550,
                                           "%s blacklisted. Transmission denied.");
+        break;
+        case GREY_ERROR:
+            /* handled below, this is just to appease the compiler */
         break;
     }
 
