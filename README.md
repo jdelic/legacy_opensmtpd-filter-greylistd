@@ -22,8 +22,15 @@ apt-get install greylistd opensmtpd-filter-greylistd
 In your OpenSMTPD configuration activate `filter_greylistd`:
 
 ```
-filter filter-greylistd greylistd "-s" "/var/run/greylistd/socket"
+filter greylistd greylistd "-s" "/var/run/greylistd/socket"
 ```
 
 TODO: finish integration
+
+
+Build
+-----
+
+`compile.sh` does most of the heavy lifting as long as you execute it in the
+base folder and have `autoconf1.15` and `libtool` installed.
 
