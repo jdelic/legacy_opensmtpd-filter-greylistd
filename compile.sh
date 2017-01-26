@@ -74,9 +74,9 @@ fi
 fpm \
     -s dir \
     -t deb \
-    -p opensmtpd-filter-greylistd_0.1.0.deb \
+    -p opensmtpd-filter-greylistd_0.1.1-1.deb \
     -n opensmtpd-filter-greylistd \
-    -v "0.1.0" \
+    -v "0.1.1-1" \
     -m "Jonas Maurus" \
     -d "opensmtpd (>=6.0.2p1)" \
     -d "opensmtpd (<<6.0.3)" \
