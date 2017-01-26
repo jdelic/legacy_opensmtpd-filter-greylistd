@@ -95,7 +95,10 @@ static int on_connect(uint64_t id, struct filter_connect *conn) {
     log_debug("debug: on_connect");
 
     char ip_str[INET6_ADDRSTRLEN];
+    char return_message[255];  // a temp buffer for return strings
+
     memset(&ip_str, 0, INET6_ADDRSTRLEN);
+    memset(&return_message, 0, 255);
 
     /* get either an ipv4 or ipv6 address */
     if (conn->remote.ss_family == AF_INET6) {
@@ -135,12 +138,14 @@ static int on_connect(uint64_t id, struct filter_connect *conn) {
             return filter_api_accept(id);
         break;
         case GREY_HOLD:
-            return filter_api_reject_code(id, FILTER_CLOSE, 450,
-                                          "%s greylisted. Try again later.");
+            memset(&return_message, 0, 255);
+            snprintf((char *)&return_message, 254, "%s greylisted. Try again later.", ip_addr);
+            return filter_api_reject_code(id, FILTER_CLOSE, 450, (char *)&return_message);
         break;
         case GREY_DENY:
-            return filter_api_reject_code(id, FILTER_CLOSE, 550,
-                                          "%s blacklisted. Transmission denied.");
+            memset(&return_message, 0, 255);
+            snprintf((char *)&return_message, 254, "%s blacklisted. Transmission denied.", ip_addr);
+            return filter_api_reject_code(id, FILTER_CLOSE, 550, (char *)&return_message);
         break;
         case GREY_ERROR:
             /* handled below, this is just to appease the compiler */
