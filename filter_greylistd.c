@@ -139,12 +139,12 @@ static int on_connect(uint64_t id, struct filter_connect *conn) {
         break;
         case GREY_HOLD:
             memset(&return_message, 0, 255);
-            snprintf((char *)&return_message, 254, "%s greylisted. Try again later.", ip_addr);
+            snprintf((char *)&return_message, 254, "%s greylisted. Try again later.", ip_str);
             return filter_api_reject_code(id, FILTER_CLOSE, 450, (char *)&return_message);
         break;
         case GREY_DENY:
             memset(&return_message, 0, 255);
-            snprintf((char *)&return_message, 254, "%s blacklisted. Transmission denied.", ip_addr);
+            snprintf((char *)&return_message, 254, "%s blacklisted. Transmission denied.", ip_str);
             return filter_api_reject_code(id, FILTER_CLOSE, 550, (char *)&return_message);
         break;
         case GREY_ERROR:
