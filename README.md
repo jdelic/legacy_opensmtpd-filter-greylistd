@@ -1,3 +1,5 @@
+** OpenSMTPD has a new filter API, this filter will be replaced by a new one **
+
 OpenSMTPD greylist support
 ==========================
 
